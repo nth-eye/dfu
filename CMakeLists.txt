@@ -10,7 +10,9 @@ add_executable(dfu main.cpp)
 target_compile_features(dfu PRIVATE cxx_std_20)
 target_link_libraries(dfu PRIVATE libdfu)
 
-add_executable(testdfu test/dfu.cpp)
+add_executable(testdfu 
+    test/dec.cpp
+    test/enc.cpp)
 target_compile_features(testdfu PRIVATE cxx_std_20)
 target_link_libraries(testdfu PRIVATE gtest_main libdfu)
 

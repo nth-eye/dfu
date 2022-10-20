@@ -1,7 +1,7 @@
 #ifndef DFU_LOG_H
 #define DFU_LOG_H
 
-#include "dfu/dfu.h"
+#include "dfu/dec.h"
 #include <cctype>
 #include <cstdio>
 
@@ -75,19 +75,19 @@ inline void log_obj(const chunk& obj)
     switch (obj.type) 
     {
     case type_raw:
-        printf("raw[%lu] \n", obj.size);
+        printf("raw[%8lu] \n", obj.size);
         if (obj.size)
             log_hex(obj.raw, obj.size);
     break;
     case type_rep_byte:
-        printf("rep[%lu] byte 0x%02x \n", obj.size, obj.rep);
+        printf("rep[%8lu] byte 0x%02x \n", obj.size, obj.rep);
     break;
     case type_rep_array:
-        printf("arr[%lu] reps %u \n", obj.size, obj.arr.reps);
+        printf("arr[%8lu] reps %u \n", obj.size, obj.arr.reps);
         log_hex(obj.arr.data, obj.size);
     break;
     case type_old_offset:
-        printf("old[%lu] offset %d \n", obj.size, obj.off);
+        printf("old[%8lu] offset %+d \n", obj.size, obj.off);
     break;
     case type_invalid:
         printf("<invalid> \n");

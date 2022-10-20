@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "dfu/dfu.h"
+#include "dfu/dec.h"
 #include "dfu/log.h"
 
 TEST(Dfu, Test)
