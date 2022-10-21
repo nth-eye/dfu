@@ -40,7 +40,7 @@ struct interface {
     }
     constexpr err encode_arr(span val, size_t rep)
     {
-        if (val.empty() || !rep || rep > 0xff)
+        if (val.empty() || !rep || rep > 0x100)
             return err_invalid_size;
 
         err e = encode_head(type_rep_array, val.size() - 1, val.size() + 1);
