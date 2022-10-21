@@ -22,7 +22,6 @@ enum err {
     err_out_of_bounds,
     err_unreachable,
     err_no_memory,
-    err_zero_size,
     err_invalid_size,
 };
 
@@ -115,6 +114,8 @@ constexpr std::tuple<chunk, err, pointer> decode(pointer p, const pointer end)
             return {{}, err_out_of_bounds, p};
         for (int i = 6; i < extr * 8 + 6; i += 8)
             cnk.off |= int(*p++) << i;
+        if (cnk.off >> (extr * 8 + 5))
+            cnk.off -= 1 << (extr * 8 + 6);
     break;
     default:
         return {{}, err_unreachable, p};

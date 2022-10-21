@@ -8,11 +8,13 @@ Alari Device Firmware Upgrade codec.
 
 ## Examples
 
-- [ ] source
+<!--  -->
+
+## TODO
+
+- [x] source
     - [x] dec
-    - [ ] enc
-        - [ ] encode
-        - [ ] comments
+    - [x] enc
 - [ ] tests
     - [ ] dec
     - [ ] enc
@@ -20,5 +22,3 @@ Alari Device Firmware Upgrade codec.
     - [ ] description
     - [ ] guide
     - [ ] examples
-
-## TODO

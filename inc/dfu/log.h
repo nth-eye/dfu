@@ -6,6 +6,17 @@
 #include <cstdio>
 
 namespace dfu {
+namespace log {
+inline constexpr auto rst = "\u001b[0m";
+inline constexpr auto blk = "\u001b[30m";
+inline constexpr auto red = "\u001b[31m";
+inline constexpr auto grn = "\u001b[32m";
+inline constexpr auto yel = "\u001b[33m";
+inline constexpr auto blu = "\u001b[34m";
+inline constexpr auto mag = "\u001b[35m";
+inline constexpr auto cyn = "\u001b[36m";
+inline constexpr auto wht = "\u001b[37m";
+}
 
 /**
  * @brief Convert integer to hexadecimal character.
@@ -75,19 +86,19 @@ inline void log_obj(const chunk& obj)
     switch (obj.type) 
     {
     case type_raw:
-        printf("raw[%8lu] \n", obj.size);
+        printf("%sRAW [%8lu] \n", log::grn, obj.size);
         if (obj.size)
             log_hex(obj.raw, obj.size);
     break;
     case type_rep_byte:
-        printf("rep[%8lu] byte 0x%02x \n", obj.size, obj.rep);
+        printf("%sREP [%8lu] byte 0x%02x \n", log::cyn, obj.size, obj.rep);
     break;
     case type_rep_array:
-        printf("arr[%8lu] reps %u \n", obj.size, obj.arr.reps);
+        printf("%sARR [%8lu] reps %u \n", log::blu, obj.size, obj.arr.reps);
         log_hex(obj.arr.data, obj.size);
     break;
     case type_old_offset:
-        printf("old[%8lu] offset %+d \n", obj.size, obj.off);
+        printf("%sOLD [%8lu] offs %+d \n", log::mag, obj.size, obj.off);
     break;
     case type_invalid:
         printf("<invalid> \n");
@@ -99,15 +110,15 @@ inline void log_obj(const chunk& obj)
 
 inline void log_seq(const seq& s)
 {
-    printf("+-----------HEX-----------+\n");
+    printf("%s+-----------HEX-----------+\n", log::rst);
     log_hex(s.data(), s.size());
-    printf("+--------DIAGNOSTIC-------+\n");
+    printf("%s+--------DIAGNOSTIC-------+\n", log::rst);
     int i = 0; 
     for (auto it : s) {
-        printf("| %d) ", ++i);
+        printf("%s| %d) ", log::rst, ++i);
         log_obj(it);
     }
-    printf("+-------------------------+\n");
+    printf("%s+-------------------------+\n", log::rst);
 }
 
 }
