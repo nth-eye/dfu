@@ -23,6 +23,7 @@ enum err {
     err_unreachable,
     err_no_memory,
     err_zero_size,
+    err_invalid_size,
 };
 
 /**

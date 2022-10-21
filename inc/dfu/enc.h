@@ -28,27 +28,76 @@ struct interface {
 
     constexpr err encode_raw(span val)
     {
-        return val.size() ? encode_general(type_raw, val.size(), val.data(), val.size()) : err_zero_size; // : encode_string(type_raw, val.data(), val.size());
+        // if (val.empty())
+        //     return err_zero_size;
+
+        // err e = encode_head(type_raw, val.size() - 1, val.size());
+        // if (e == err_ok) {
+        //     std::copy_n(val.data(), val.size(), buf() + idx());
+        //     idx() += val.size();
+        // }
+        // return e;
+        // return val.size() ? encode_general(type_raw, val.size(), val.data(), val.size()) : err_zero_size;
+
+        return encode_general(type_raw, val.size(), val.data(), val.size());
     }
     constexpr err encode_raw(list val)
     {
-        return val.size() ? encode_general(type_raw, val.size(), val.begin(), val.size()) : err_zero_size; // : encode_string(type_raw, val.begin(), val.size());
+        // return encode_raw(span{val.begin(), val.end()});
+
+        return encode_general(type_raw, val.size(), val.begin(), val.size());
     }
     constexpr err encode_rep(byte val, size_t rep)
     {
-        return rep ? encode_general(type_rep_byte, rep, &val, 1) : err_zero_size;
+        // err e = encode_head(type_rep_byte, size_t - 1, val.size() + 1);
+        // if (e == err_ok) {
+        //     std::copy_n(&val, 1, buf() + idx());
+        //     idx() += 1;
+        //     return e;
+        // }
+        // return e;
+        // return rep ? encode_general(type_rep_byte, rep, &val, 1) : err_zero_size;
+
+        return encode_general(type_rep_byte, rep, &val, 1);
     }
-    constexpr err encode_rep(span val, size_t rep)
+    constexpr err encode_arr(span val, byte rep)
     {
-        // TODO // return rep && val.size() ? encode_general(type_rep_array, val.size(), &val, 1) : err_zero_size;
+        if (val.empty())
+            return err_zero_size;
+
+        err e = encode_head(type_rep_array, val.size() - 1, val.size() + 1);
+        if (e == err_ok) {
+            std::copy_n(&rep,       1,          buf() + idx());
+            std::copy_n(val.data(), val.size(), buf() + idx());
+            idx() += val.size() + 1;
+            return e;
+        }
+        return e;
     }
-    constexpr err encode_rep(list val, size_t rep)
+    // constexpr err encode_arr(list val, byte rep)
+    // {
+    //     return encode_rep(span{val.begin(), val.end()}, rep);
+    // }
+    constexpr err encode_off(int32_t val, size_t len)
     {
-        // TODO // return rep && val.size()? encode_general(type_rep_array, val.size(), &val, 1) : err_zero_size;
-    }
-    constexpr err encode_off(int32_t val)
-    {
-        // TODO
+        byte ai;
+
+        if (val >= -0x20 && val < 0x20)
+            ai = 0;
+        else if (val >= -0x2000 && val < 0x2000)
+            ai = 1;
+        else if (val >= -0x200000 && val < 0x200000)
+            ai = 2;
+        else
+            ai = 3;
+
+        byte tmp[4] = {
+            (val & 0x3f) | ai,
+            (val >>   6),
+            (val >>  14),
+            (val >>  22),
+        };
+        return encode_general(type_old_offset, len, tmp, ai + 1);
     }
 private:
     constexpr err encode_head(chunk_type ct, size_t val, size_t add_len = 0) // NOTE: add_len is only to check if enoug capacity
@@ -76,11 +125,41 @@ private:
     
         return err_ok;
     }
-    constexpr err encode_general(chunk_type ct, size_t cs, const void* data, size_t len)
+    constexpr err encode_general(chunk_type ct, size_t cs, pointer data, size_t len)
     {
-        err e = encode_head(ct, cs - 1, len);
+        if (!cs--)
+            return err_zero_size;
+
+        // byte ai;
+
+        // if (cs <= 0xf)
+        //     ai = 0;
+        // else if (cs <= 0xfff)
+        //     ai = 1;
+        // else if (cs <= 0xfffff)
+        //     ai = 2;
+        // else
+        //     ai = 3;
+
+        // if (idx() + ai + len > max())
+        //     return err_no_memory;
+
+        // buf()[idx()++] = ct | (ai << 2) | (cs & 0xf);
+
+        // cs >>= 4;
+
+        // for (int i = 0; i < ai * 8; i += 8)
+        //     buf()[idx()++] = cs >> i;
+    
+        // std::copy_n(data, len, buf() + idx());
+
+        // idx() += len;
+
+        // return err_ok;
+            
+        err e = encode_head(ct, cs, len);
         if (e == err_ok) {
-            std::copy_n(static_cast<pointer>(data), len, buf() + idx());
+            std::copy_n(data, len, buf() + idx());
             idx() += len;
         }
         return e;

@@ -11,6 +11,7 @@ Alari Device Firmware Upgrade codec.
 - [ ] source
     - [x] dec
     - [ ] enc
+        - [ ] encode
         - [ ] comments
 - [ ] tests
     - [ ] dec
