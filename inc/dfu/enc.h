@@ -47,9 +47,9 @@ struct interface {
         if (e == err_ok) {
             byte nr_reps = rep - 1;
             std::copy_n(&nr_reps, 1, buf() + idx());
-            idx() += val.size();
-            std::copy_n(val.data(), val.size(), buf() + idx());
             idx() += 1;
+            std::copy_n(val.data(), val.size(), buf() + idx());
+            idx() += val.size();
             return e;
         }
         return e;
@@ -93,7 +93,7 @@ private:
         else
             ai = 3;
 
-        if (idx() + ai + add_len > max())
+        if (idx() + ai + add_len + 1 > max())
             return err_no_memory;
 
         buf()[idx()++] = ct | (ai << 2) | ((cs & 0xf) << 4);

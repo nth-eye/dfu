@@ -86,19 +86,19 @@ inline void log_obj(const chunk& obj)
     switch (obj.type) 
     {
     case type_raw:
-        printf("%sRAW [%8lu] \n", log::grn, obj.size);
+        printf("%sRAW [%9lu] \n", log::grn, obj.size);
         if (obj.size)
             log_hex(obj.raw, obj.size);
     break;
     case type_rep_byte:
-        printf("%sREP [%8lu] byte 0x%02x \n", log::cyn, obj.size, obj.rep);
+        printf("%sREP [%9lu] byte 0x%02x \n", log::cyn, obj.size, obj.rep);
     break;
     case type_rep_array:
-        printf("%sARR [%8lu] reps %u \n", log::blu, obj.size, obj.arr.reps);
+        printf("%sARR [%9lu] reps %lu \n", log::blu, obj.size, obj.arr.reps);
         log_hex(obj.arr.data, obj.size);
     break;
     case type_old_offset:
-        printf("%sOLD [%8lu] offs %+d \n", log::mag, obj.size, obj.off);
+        printf("%sOLD [%9lu] offs %+d \n", log::mag, obj.size, obj.off);
     break;
     case type_invalid:
         printf("<invalid> \n");

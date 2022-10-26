@@ -42,7 +42,7 @@ enum chunk_type {
  * 
  */
 struct array {
-    byte    reps;
+    size_t  reps;
     pointer data;
 };
 
