@@ -36,14 +36,14 @@ struct interface {
     }
     constexpr err encode_rep(byte val, size_t rep)
     {
-        return encode_general(type_rep_byte, rep, &val, 1);
+        return encode_general(type_rep, rep, &val, 1);
     }
     constexpr err encode_arr(span val, size_t rep)
     {
         if (val.empty() || !rep || rep > 0x100)
             return err_invalid_size;
 
-        err e = encode_head(type_rep_array, val.size() - 1, val.size() + 1);
+        err e = encode_head(type_arr, val.size() - 1, val.size() + 1);
         if (e == err_ok) {
             byte nr_reps = rep - 1;
             std::copy_n(&nr_reps, 1, buf() + idx());
@@ -77,10 +77,10 @@ struct interface {
         };
         if (val < 0)
             tmp[ai] |= 0x80;
-        return encode_general(type_old_offset, len, tmp, ai + 1);
+        return encode_general(type_off, len, tmp, ai + 1);
     }
 private:
-    constexpr err encode_head(chunk_type ct, size_t cs, size_t add_len = 0) // NOTE: add_len is only to check if enoug capacity
+    constexpr err encode_head(chunk_type ct, size_t cs, size_t add_len = 0) // NOTE: add_len is only to check if enough capacity
     {
         byte ai;
 

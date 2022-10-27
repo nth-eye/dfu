@@ -20,7 +20,6 @@ using pointer = const byte*;
 enum err {
     err_ok,
     err_out_of_bounds,
-    err_unreachable,
     err_no_memory,
     err_invalid_size,
 };
@@ -31,9 +30,9 @@ enum err {
  */
 enum chunk_type {
     type_raw,
-    type_rep_byte,
-    type_rep_array,
-    type_old_offset,
+    type_rep,
+    type_arr,
+    type_off,
     type_invalid,
 };
 
@@ -79,7 +78,7 @@ constexpr std::tuple<chunk, err, pointer> decode(pointer p, const pointer end)
     auto extr =           (*p & 0b0000'1100) >> 2;
     auto size =           (*p & 0b1111'0000) >> 4;
 
-    if (++p + extr > end)
+    if (++p + extr >= end)
         return {{}, err_out_of_bounds, p};
 
     for (int i = 4; i < extr * 8 + 4; i += 8)
@@ -95,19 +94,19 @@ constexpr std::tuple<chunk, err, pointer> decode(pointer p, const pointer end)
         cnk.raw = p;
         p += size;
     break;
-    case type_rep_byte:
-        if (p > end)
+    case type_rep:
+        if (p >= end)
             return {{}, err_out_of_bounds, p};
         cnk.rep = *p++;
     break;
-    case type_rep_array:
+    case type_arr:
         if (p + size >= end) // NOTE: >= because + 1 byte for reps
             return {{}, err_out_of_bounds, p};
         cnk.arr.reps = *p++ + 1;
         cnk.arr.data = p;
         p += size;
     break;
-    case type_old_offset:
+    case type_off:
         extr    =  *p & 0b0000'0011;
         cnk.off = (*p & 0b1111'1100) >> 2;
         if (++p + extr > end)
@@ -117,8 +116,7 @@ constexpr std::tuple<chunk, err, pointer> decode(pointer p, const pointer end)
         if (cnk.off >> (extr * 8 + 5))
             cnk.off -= 1 << (extr * 8 + 6);
     break;
-    default:
-        return {{}, err_unreachable, p};
+    default:;
     }
     return {cnk, err_ok, p};
 }

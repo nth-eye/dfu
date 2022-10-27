@@ -90,14 +90,14 @@ inline void log_obj(const chunk& obj)
         if (obj.size)
             log_hex(obj.raw, obj.size);
     break;
-    case type_rep_byte:
+    case type_rep:
         printf("%sREP [%9lu] byte 0x%02x \n", log::cyn, obj.size, obj.rep);
     break;
-    case type_rep_array:
+    case type_arr:
         printf("%sARR [%9lu] reps %lu \n", log::blu, obj.size, obj.arr.reps);
         log_hex(obj.arr.data, obj.size);
     break;
-    case type_old_offset:
+    case type_off:
         printf("%sOLD [%9lu] offs %+d \n", log::mag, obj.size, obj.off);
     break;
     case type_invalid:

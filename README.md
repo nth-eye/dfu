@@ -6,6 +6,8 @@ Delta Device Firmware Upgrade codec. In case of question about protocol contact 
 
 `using namespace dfu`
 
+Decoder toolset consists of `decode()`, which returns decoded `chunk`, status `err`, and pointer to next byte past last interpreted. For convenient use in range-based for loop there is `seq` wrapper, which decodes adjacent items in a sequence one by one. Range safely stops at anything invalid. Encoder can be created with memory provided by user as `view`, or self-contained template as `codec<>`. To pass either of those to handler functions use `ref` and `cref`. All these classes provide same functionality through CRTP base class, so no overhead of virtual function calls, and no unnecessary pointer to self-contained memory for `codec<>`. Both de/encoder are fully `constexpr`.
+
 ## Examples
 
 ### Encode 
@@ -56,15 +58,15 @@ for (auto chunk : dfu::seq{data}) {
     case dfu::type_raw:
         flash_write(chunk.raw, chunk.size);
     break;
-    case dfu::type_rep_byte:
+    case dfu::type_rep:
         for (size_t i = 0; i < chunk.size; ++i)
             flash_write(&chunk.rep, 1);
     break;
-    case dfu::type_rep_array:
+    case dfu::type_arr:
         for (size_t i = 0; i < chunk.arr.reps; ++i)
             flash_write(chunk.arr.data, chunk.size);
     break;
-    case dfu::type_old_offset: {
+    case dfu::type_off: {
         static uint8_t tmp[512];
         size_t processed = 0;
         size_t base_addr = chunk.off + int(requested_address);
@@ -88,12 +90,12 @@ for (auto chunk : dfu::seq{data}) {
 - [x] source
     - [x] dec
     - [x] enc
-- [ ] tests
-    - [ ] dec
+- [x] tests
+    - [x] dec
     - [x] enc
-- [ ] reamde
-    - [ ] description
-    - [ ] guide
+- [x] reamde
+    - [x] intro
+    - [x] guide
     - [x] examples
 
 [1]: https://github.com/AlariOis
